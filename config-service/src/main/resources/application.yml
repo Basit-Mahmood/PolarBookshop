@@ -48,13 +48,15 @@ server:
 
 spring:
   application:
-    name: config-service # A name for the current application
+    name: config-service        # A name for the current application
   cloud:
     config:
       server:
         git:
-          uri: https://github.com/Basit-Mahmood/PolarBookshop/config-repo # The URL to the remote Git repository to use as the configuration data backend.
-          default-label: main # By default, the server will return configuration data from the “main” branch.
-          timeout: 5 # Time limit to establish a connection with the remote repository
-          clone-on-start: true # Clones the remote repository locally on startup
-          force-pull: true # Forces pulling the remote repository and discarding any local changes
+          uri: https://github.com/Basit-Mahmood/PolarBookshopConfigServer.git # The URL to the remote Git repository to use as the configuration data backend.
+          username: ${GIT_USER_NAME}
+          password: ${GIT_PERSONAL_ACCESS_TOKEN}
+          default-label: master # By default, the server will return configuration data from the “main” branch.
+          timeout: 5            # Time limit to establish a connection with the remote repository
+          clone-on-start: true  # Clones the remote repository locally on startup
+          force-pull: true      # Forces pulling the remote repository and discarding any local changes

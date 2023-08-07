@@ -46,5 +46,28 @@ server:
       max: 50
       min-spare: 5
 
+spring:
+  application:
+    name: catalog-service             # The name of the application, used by the config server to filter the configuration
+  config:
+    import: "optional:configserver:"  # Imports configuration data from a config server when available
+  cloud:
+    config:
+      uri: http://localhost:8888      # The URL of the configuration server
+      request-connect-timeout: 5000   # 5s Timeout on waiting to connect to the config server (ms)
+      request-read-timeout: 5000      # 5s Timeout on waiting to read configuration data from the config server (ms)
+      fail-fast: false                # In production, set to true, Makes a failure to connect to the config server fatal
+      retry:
+        max-attempts: 6               # Maximum number of attempts
+        initial-interval: 1000        # 1s, Initial retry interval for backoff (ms)
+        max-interval: 2000            # 2s, Maximum retry interval for backoff (ms)
+        multiplier: 1.1               # Multiplier to compute the next interval
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh              # Exposes the /actuator/refresh endpoint through HTTP
+
 polar:
   greeting: Welcome to the local book catalog!

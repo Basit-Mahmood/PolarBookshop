@@ -1,16 +1,16 @@
 package pk.training.basit.polarbookshop.catalogservice.service;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pk.training.basit.polarbookshop.catalogservice.domain.Book;
+import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookAlreadyExistsException;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookNotFoundException;
-import pk.training.basit.polarbookshop.catalogservice.repository.BookRepository;
+import pk.training.basit.polarbookshop.catalogservice.jpa.repository.BookRepository;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
@@ -32,9 +32,9 @@ class BookServiceTest {
     @Test
     void whenBookToCreateAlreadyExistsThenThrows() {
         var bookIsbn = "1234561232";
-        var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
+        BookDTO bookDto = createBookDto(bookIsbn, "Title", "Author", 9.90, "Polarsophia");
         when(bookRepository.existsByIsbn(bookIsbn)).thenReturn(true);
-        assertThatThrownBy(() -> bookService.addBookToCatalog(bookToCreate))
+        assertThatThrownBy(() -> bookService.addBookToCatalog(bookDto))
                 .isInstanceOf(BookAlreadyExistsException.class)
                 .hasMessage("A book with ISBN " + bookIsbn + " already exists.");
     }
@@ -46,6 +46,15 @@ class BookServiceTest {
         assertThatThrownBy(() -> bookService.viewBookDetails(bookIsbn))
                 .isInstanceOf(BookNotFoundException.class)
                 .hasMessage("The book with ISBN " + bookIsbn + " was not found.");
+    }
+
+    private BookDTO createBookDto(String isbn, String title, String author, Double price, String publisher) {
+        return BookDTO.builder(isbn)
+                .title(title)
+                .author(author)
+                .price(price)
+                .publisher(publisher)
+                .build();
     }
 
 }

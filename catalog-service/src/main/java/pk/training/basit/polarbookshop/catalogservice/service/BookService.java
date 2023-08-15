@@ -1,12 +1,16 @@
 package pk.training.basit.polarbookshop.catalogservice.service;
 
-import pk.training.basit.polarbookshop.catalogservice.domain.Book;
+import org.springframework.data.domain.Pageable;
+import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.jpa.entity.Book;
+
+import java.util.Collection;
 
 public interface BookService {
 
-    Iterable<Book> viewBookList();
-    Book viewBookDetails(String isbn);
-    Book addBookToCatalog(Book book);
+    Collection<BookDTO> viewBookList(Pageable pageable);
+    BookDTO viewBookDetails(String isbn);
+    BookDTO addBookToCatalog(BookDTO bookDto);
     void removeBookFromCatalog(String isbn);
-    Book editBookDetails(String isbn, Book book);
+    BookDTO editBookDetails(String isbn, BookDTO bookDto);
 }

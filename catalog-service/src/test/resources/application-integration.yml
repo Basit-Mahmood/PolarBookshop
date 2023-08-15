@@ -1,0 +1,4 @@
+# Identifies the PostgreSQL module in Testcontainers. “15.3” is the version of PostgreSQL to use.
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:15.3:///

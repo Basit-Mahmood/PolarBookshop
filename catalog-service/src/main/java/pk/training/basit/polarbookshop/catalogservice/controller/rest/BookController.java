@@ -1,10 +1,15 @@
 package pk.training.basit.polarbookshop.catalogservice.controller.rest;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pk.training.basit.polarbookshop.catalogservice.domain.Book;
+import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.service.BookService;
+
+import java.util.Collection;
 
 // Stereotype annotation marking a class as a Spring component and a source of handlers for REST
 //endpoints
@@ -24,15 +29,15 @@ public class BookController {
      * Maps HTTP GET requests to the specific handler method
      */
     @GetMapping
-    public Iterable<Book> get() {
-        return bookService.viewBookList();
+    public Collection<BookDTO> get(@SortDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return bookService.viewBookList(pageable);
     }
 
     /**
      * A URI template variable appended to the root path mapping URI ("/books/{isbn}")
      */
     @GetMapping("{isbn}")
-    public Book getByIsbn(@PathVariable String isbn) { // @PathVariable binds a method parameter to a URI template variable ({isbn}).
+    public BookDTO getByIsbn(@PathVariable String isbn) { // @PathVariable binds a method parameter to a URI template variable ({isbn}).
         return bookService.viewBookDetails(isbn);
     }
 
@@ -41,8 +46,16 @@ public class BookController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) // Returns a 201 status if the book is created successfully
-    public Book post(@Valid @RequestBody Book book) { // @RequestBody binds a method parameter to the body of a web request.
-        return bookService.addBookToCatalog(book);
+    public BookDTO post(@Valid @RequestBody BookDTO bookDto) { // @RequestBody binds a method parameter to the body of a web request.
+        return bookService.addBookToCatalog(bookDto);
+    }
+
+    /**
+     * Maps HTTP PUT requests to the specific handler method
+     */
+    @PutMapping("{isbn}")
+    public BookDTO put(@PathVariable String isbn, @Valid @RequestBody BookDTO bookDto) {
+        return bookService.editBookDetails(isbn, bookDto);
     }
 
     /**
@@ -54,11 +67,4 @@ public class BookController {
         bookService.removeBookFromCatalog(isbn);
     }
 
-    /**
-     * Maps HTTP PUT requests to the specific handler method
-     */
-    @PutMapping("{isbn}")
-    public Book put(@PathVariable String isbn, @Valid @RequestBody Book book) {
-        return bookService.editBookDetails(isbn, book);
-    }
 }

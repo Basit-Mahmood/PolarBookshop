@@ -2,14 +2,20 @@ package pk.training.basit.polarbookshop.catalogservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import pk.training.basit.polarbookshop.catalogservice.domain.Book;
+import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 // Loads a full Spring web application context and a Servlet container listening on a random port
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient(timeout = "300000") // 300 seconds, 5 minutes
+
+// Enables the “integration” profile to load configuration from application-integration.yml
+@ActiveProfiles("integration")
 class CatalogServiceApplicationTests {
 
 	// Utility to perform REST calls for testing
@@ -19,14 +25,14 @@ class CatalogServiceApplicationTests {
 	@Test
 	void whenGetRequestWithIdThenBookReturned() {
 		var bookIsbn = "1231231230";
-		var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
-		Book expectedBook = webTestClient
+		var bookToCreate = createBookDto(bookIsbn, "Title", "Author", 9.90, "Polarsophia");
+		BookDTO expectedBook = webTestClient
 				.post()
 				.uri("/books")
 				.bodyValue(bookToCreate)
 				.exchange()
 				.expectStatus().isCreated()
-				.expectBody(Book.class).value(book -> assertThat(book).isNotNull())
+				.expectBody(BookDTO.class).value(book -> assertThat(book).isNotNull())
 				.returnResult().getResponseBody();
 
 		webTestClient
@@ -34,7 +40,7 @@ class CatalogServiceApplicationTests {
 				.uri("/books/" + bookIsbn)
 				.exchange()
 				.expectStatus().is2xxSuccessful()
-				.expectBody(Book.class).value(actualBook -> {
+				.expectBody(BookDTO.class).value(actualBook -> {
 					assertThat(actualBook).isNotNull();
 					assertThat(actualBook.isbn()).isEqualTo(expectedBook.isbn());
 				});
@@ -42,7 +48,7 @@ class CatalogServiceApplicationTests {
 
 	@Test
 	void whenPostRequestThenBookCreated() {
-		var expectedBook = new Book("1231231231", "Title", "Author", 9.90);
+		var expectedBook = createBookDto("1231231231", "Title", "Author", 9.90, "Polarsophia");
 
 		webTestClient
 				.post()
@@ -50,7 +56,7 @@ class CatalogServiceApplicationTests {
 				.bodyValue(expectedBook)
 				.exchange()
 				.expectStatus().isCreated()
-				.expectBody(Book.class).value(actualBook -> {
+				.expectBody(BookDTO.class).value(actualBook -> {
 					assertThat(actualBook).isNotNull();
 					assertThat(actualBook.isbn()).isEqualTo(expectedBook.isbn());
 				});
@@ -59,16 +65,17 @@ class CatalogServiceApplicationTests {
 	@Test
 	void whenPutRequestThenBookUpdated() {
 		var bookIsbn = "1231231232";
-		var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
-		Book createdBook = webTestClient
+		var bookToCreate = createBookDto(bookIsbn, "Title", "Author", 9.90, "Polarsophia");
+		BookDTO createdBook = webTestClient
 				.post()
 				.uri("/books")
 				.bodyValue(bookToCreate)
 				.exchange()
 				.expectStatus().isCreated()
-				.expectBody(Book.class).value(book -> assertThat(book).isNotNull())
+				.expectBody(BookDTO.class).value(book -> assertThat(book).isNotNull())
 				.returnResult().getResponseBody();
-		var bookToUpdate = new Book(createdBook.isbn(), createdBook.title(), createdBook.author(), 7.95);
+
+		var bookToUpdate = updateBookDto(createdBook.id(), createdBook.isbn(), createdBook.title(), createdBook.author(), 7.95, createdBook.publisher());
 
 		webTestClient
 				.put()
@@ -76,7 +83,7 @@ class CatalogServiceApplicationTests {
 				.bodyValue(bookToUpdate)
 				.exchange()
 				.expectStatus().isOk()
-				.expectBody(Book.class).value(actualBook -> {
+				.expectBody(BookDTO.class).value(actualBook -> {
 					assertThat(actualBook).isNotNull();
 					assertThat(actualBook.price()).isEqualTo(bookToUpdate.price());
 				});
@@ -85,7 +92,7 @@ class CatalogServiceApplicationTests {
 	@Test
 	void whenDeleteRequestThenBookDeleted() {
 		var bookIsbn = "1231231233";
-		var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
+		var bookToCreate = createBookDto(bookIsbn, "Title", "Author", 9.90, "Polarsophia");
 		webTestClient
 				.post()
 				.uri("/books")
@@ -107,6 +114,25 @@ class CatalogServiceApplicationTests {
 				.expectBody(String.class).value(errorMessage ->
 						assertThat(errorMessage).isEqualTo("The book with ISBN " + bookIsbn + " was not found.")
 				);
+	}
+
+	private BookDTO createBookDto(String isbn, String title, String author, Double price, String publisher) {
+		return getBookDtoBuilder(isbn, title, author, price, publisher)
+				.build();
+	}
+
+	private BookDTO updateBookDto(Long id, String isbn, String title, String author, Double price, String publisher) {
+		return getBookDtoBuilder(isbn, title, author, price, publisher)
+				.id(id)
+				.build();
+	}
+
+	private BookDTO.Builder getBookDtoBuilder(String isbn, String title, String author, Double price, String publisher) {
+		return BookDTO.builder(isbn)
+				.title(title)
+				.author(author)
+				.price(price)
+				.publisher(publisher);
 	}
 
 }

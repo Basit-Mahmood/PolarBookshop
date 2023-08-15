@@ -62,6 +62,13 @@ spring:
         initial-interval: 1000        # 1s, Initial retry interval for backoff (ms)
         max-interval: 2000            # 2s, Maximum retry interval for backoff (ms)
         multiplier: 1.1               # Multiplier to compute the next interval
+  datasource:
+    username: basit
+    password: basit123
+    url: jdbc:postgresql://localhost:5432/polardb_catalog
+    hikari:
+      connection-timeout: 2000  # The maximum time (ms) to spend waiting to get a connection from the pool
+      maximum-pool-size: 5      # The maximum number of connections HikariCP will keep in the pool
 
 management:
   endpoints:

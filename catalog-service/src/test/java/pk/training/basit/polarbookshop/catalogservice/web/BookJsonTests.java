@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import pk.training.basit.polarbookshop.catalogservice.domain.Book;
+import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.jpa.entity.Book;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,31 +31,58 @@ class BookJsonTests {
 
     @Test
     void testSerialize() throws Exception {
-        var book = new Book("1234567890", "Title", "Author", 9.90);
+        var book = Book.builder("1234567890")
+                .id(394L)
+                .title("Title")
+                .author("Author")
+                .price(9.90)
+                .publisher("Polarsophia")
+                .version(21)
+                .build();
+
         var jsonContent = json.write(book);
+        assertThat(jsonContent).extractingJsonPathNumberValue("@.id")
+                .isEqualTo(book.getId().intValue());
         assertThat(jsonContent).extractingJsonPathStringValue("@.isbn")
-                .isEqualTo(book.isbn());
+                .isEqualTo(book.getIsbn());
         assertThat(jsonContent).extractingJsonPathStringValue("@.title")
-                .isEqualTo(book.title());
+                .isEqualTo(book.getTitle());
         assertThat(jsonContent).extractingJsonPathStringValue("@.author")
-                .isEqualTo(book.author());
+                .isEqualTo(book.getAuthor());
         assertThat(jsonContent).extractingJsonPathNumberValue("@.price")
-                .isEqualTo(book.price());
+                .isEqualTo(book.getPrice());
+        assertThat(jsonContent).extractingJsonPathStringValue("@.publisher")
+                .isEqualTo(book.getPublisher());
+        assertThat(jsonContent).extractingJsonPathNumberValue("@.version")
+                .isEqualTo(book.getVersion());
     }
 
     @Test
     void testDeserialize() throws Exception {
         var content = """
                 {
+                    "id": 394,
                     "isbn": "1234567890",
                     "title": "Title",
                     "author": "Author",
-                    "price": 9.90
+                    "price": 9.90,
+                    "publisher": "Polarsophia",
+                    "version": 21
                 }
                 """;
+
+        var book = Book.builder("1234567890")
+                .id(394L)
+                .title("Title")
+                .author("Author")
+                .price(9.90)
+                .publisher("Polarsophia")
+                .version(21)
+                .build();
+
         assertThat(json.parse(content))
                 .usingRecursiveComparison()
-                .isEqualTo(new Book("1234567890", "Title", "Author", 9.90));
+                .isEqualTo(book);
     }
 
 }

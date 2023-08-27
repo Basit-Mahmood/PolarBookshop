@@ -1,7 +1,5 @@
 name: Commit Stage    # The name of the workflow
-on:                   # The workflow is triggered when new code is pushed to the repository
-  push:
-    branches: [ "master", "main" ]
+on: push                  # The workflow is triggered when new code is pushed to the repository
 
 jobs:                         # Groups together all the jobs that run in the Commit Stage workflow.
   build:                      # The job’s unique identifier

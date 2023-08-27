@@ -9,6 +9,7 @@ import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookAlreadyExistsException;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookNotFoundException;
 import pk.training.basit.polarbookshop.catalogservice.jpa.repository.BookRepository;
+import pk.training.basit.polarbookshop.catalogservice.service.impl.BookServiceImpl;
 
 import java.util.Optional;
 
@@ -26,15 +27,31 @@ class BookServiceTest {
     @Mock
     private BookRepository bookRepository;
 
+    /**
+     * The BookServiceImpl class is taking one argument in it's constructor. We create the mock of the one
+     * argument required by BookServiceImpl class using the @Mock annotation above.
+     *
+     * Using the @InjectMocks annotation on BookServiceImpl. Mockitio will inject the above one mock dependency
+     * into the BookServiceImpl constructor. And one more thing you can notice is that you don’t even have
+     * to create a new BookServiceImpl object. Mockito will inject it for you. We don't have to use the following
+     *
+     * 		BookServiceImpl bookServiceImpl = new BookServiceImpl(bookRepository);
+     *
+     * Note @InjectMocks can't be use on interfaces. Like you can not do the following
+     *
+     * 		@InjectMocks
+            private BookService bookService;
+     *
+     */
     @InjectMocks
-    private BookService bookService;
+    private BookServiceImpl bookServiceImpl;
 
     @Test
     void whenBookToCreateAlreadyExistsThenThrows() {
         var bookIsbn = "1234561232";
         BookDTO bookDto = createBookDto(bookIsbn, "Title", "Author", 9.90, "Polarsophia");
         when(bookRepository.existsByIsbn(bookIsbn)).thenReturn(true);
-        assertThatThrownBy(() -> bookService.addBookToCatalog(bookDto))
+        assertThatThrownBy(() -> bookServiceImpl.addBookToCatalog(bookDto))
                 .isInstanceOf(BookAlreadyExistsException.class)
                 .hasMessage("A book with ISBN " + bookIsbn + " already exists.");
     }
@@ -43,7 +60,7 @@ class BookServiceTest {
     void whenBookToReadDoesNotExistThenThrows() {
         var bookIsbn = "1234561232";
         when(bookRepository.findByIsbn(bookIsbn)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> bookService.viewBookDetails(bookIsbn))
+        assertThatThrownBy(() -> bookServiceImpl.viewBookDetails(bookIsbn))
                 .isInstanceOf(BookNotFoundException.class)
                 .hasMessage("The book with ISBN " + bookIsbn + " was not found.");
     }

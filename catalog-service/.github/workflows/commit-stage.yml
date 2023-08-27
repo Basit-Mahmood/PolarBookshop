@@ -1,24 +1,26 @@
-name: Commit Stage
-on: push
+name: Commit Stage    # The name of the workflow
+on:                   # The workflow is triggered when new code is pushed to the repository
+  push:
+    branches: [ "master", "main" ]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: basit-mahmood/catalog-service
   VERSION: latest
 
-jobs:
-  build:
-    name: Build and Test
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      security-events: write
-    steps:
+jobs:                         # Groups together all the jobs that run in the Commit Stage workflow.
+  build:                      # The job’s unique identifier
+    name: Build and Test      # A human-friendly name for the job
+    runs-on: ubuntu-22.04     # The type of machine where the job should be run
+    permissions:              # The permissions granted to the job
+      contents: read          # The Build and Test job will need read access to the Git repository
+      security-events: write  # The Build and Test job will need write access to the security events when submitting a vulnerability report to GitHub.
+    steps:                    # Each job is composed of steps, which are executed sequentially
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3   # Checks out the current Git repository (catalog-service)
       - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
+        uses: actions/setup-java@v3 # Installs and configures a Java runtime
+        with:                       # Defines which version, distribution, and cache type to use
           distribution: temurin
           java-version: 17
           cache: gradle
@@ -27,20 +29,27 @@ jobs:
           chmod +x gradlew
           ./gradlew build
       - name: Code vulnerability scanning
-        uses: anchore/scan-action@v3
-        id: scan
+        uses: anchore/scan-action@v3  # Scans the codebase for vulnerabilities using grype
+        id: scan                      # Assigns an identifier to the current step so that it can be referenced from subsequent steps
         with:
-          path: "${{ github.workspace }}"
-          fail-build: false
-          severity-cutoff: high
+          path: "${{ github.workspace }}"   # The path to the checked-out repository
+          fail-build: false                 # Whether to fail the build in the event of security vulnerabilities
+          severity-cutoff: high             # The minimum security category to be considered as an error (low, medium, high, critical)
       - name: Upload vulnerability report
-        uses: github/codeql-action/upload-sarif@v2
-        if: success() || failure()
+        uses: github/codeql-action/upload-sarif@v2  # Uploads the security vulnerability report to GitHub (SARIF format)
+        if: success() || failure()                  # Uploads the report even if the previous step fails
         with:
-          sarif_file: ${{ steps.scan.outputs.sarif }}
+          sarif_file: ${{ steps.scan.outputs.sarif }}   # Fetches the report from the output of the previous step
+      - name: Validate Kubernetes manifests
+        uses: stefanprodan/kube-tools@v1
+        with:
+          kubectl: 1.28.1
+          kubeval: 0.16.1
+          command: |
+            kubeval --strict -d k8s
   package:
     name: Package and Publish
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     needs: [ build ]
     runs-on: ubuntu-22.04
     permissions:

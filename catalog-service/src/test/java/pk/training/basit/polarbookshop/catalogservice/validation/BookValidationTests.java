@@ -66,7 +66,7 @@ class BookValidationTests {
 
     @Test
     void whenTitleIsNotDefinedThenValidationFails() {
-        var book = getBookDto("a234567890", "", "Author", 9.90, "Polarsophia");
+        var book = getBookDto("1234567890", "", "Author", 9.90, "Polarsophia");
         Set<ConstraintViolation<BookDTO>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
@@ -75,7 +75,7 @@ class BookValidationTests {
 
     @Test
     void whenAuthorIsNotDefinedThenValidationFails() {
-        var book = getBookDto("a234567890", "Title", "", 9.90, "Polarsophia");
+        var book = getBookDto("1234567890", "Title", "", 9.90, "Polarsophia");
         Set<ConstraintViolation<BookDTO>> violations = validator.validate(book);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())

@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 // Enables the “integration” profile to load configuration from application-integration.yml
 @ActiveProfiles("integration")
-public class BookRepositoryJdbcTests {
+public class BookRepositoryJpaTests {
 
     @Autowired
     private BookRepository bookRepository;

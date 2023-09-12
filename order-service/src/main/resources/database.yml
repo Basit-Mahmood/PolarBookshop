@@ -1,0 +1,9 @@
+spring:
+  r2dbc:
+    username: basit
+    password: basit123
+    url: r2dbc:postgresql://localhost:5432/polardb_order
+    pool:
+      max-create-connection-time: 2s
+      initial-size: 5
+      max-size: 10

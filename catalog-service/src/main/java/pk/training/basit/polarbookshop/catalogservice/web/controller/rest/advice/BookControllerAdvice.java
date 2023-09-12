@@ -1,4 +1,4 @@
-package pk.training.basit.polarbookshop.catalogservice.controller.rest.advice;
+package pk.training.basit.polarbookshop.catalogservice.web.controller.rest.advice;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;

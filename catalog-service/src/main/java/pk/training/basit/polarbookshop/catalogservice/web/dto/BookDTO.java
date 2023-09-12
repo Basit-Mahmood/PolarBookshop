@@ -1,4 +1,4 @@
-package pk.training.basit.polarbookshop.catalogservice.dto;
+package pk.training.basit.polarbookshop.catalogservice.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,0 +1,22 @@
+server:
+  port: 9002
+  shutdown: graceful                        # Enable graceful shutdown
+  netty:
+    connection-timeout: 2s
+    idle-timeout: 15s
+
+spring:
+  application:
+    name: order-service                   # The name of the application, used by the config server to filter the configuration
+  lifecycle:
+    timeout-per-shutdown-phase: 15s       # Defines a 15 sec grace period
+  config:
+    import:
+      - database.yml
+      - flyway.yml
+      - cloud-config-server.yml
+      - jackson.yml
+      - logging.yml
+
+polar:
+  catalog-service-uri: "http://localhost:9001"

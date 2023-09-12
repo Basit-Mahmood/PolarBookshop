@@ -1,4 +1,4 @@
-package pk.training.basit.polarbookshop.catalogservice.controller.rest;
+package pk.training.basit.polarbookshop.catalogservice.web.controller.rest;
 
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.service.BookService;
 
 import java.util.Collection;

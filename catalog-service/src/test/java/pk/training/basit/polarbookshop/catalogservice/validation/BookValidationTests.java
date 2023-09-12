@@ -6,7 +6,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
 
 import java.util.List;
 import java.util.Set;

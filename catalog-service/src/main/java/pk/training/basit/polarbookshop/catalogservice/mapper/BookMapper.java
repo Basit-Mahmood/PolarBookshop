@@ -1,8 +1,6 @@
 package pk.training.basit.polarbookshop.catalogservice.mapper;
 
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.jpa.entity.Book;
 
 import java.util.function.BiFunction;

@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookAlreadyExistsException;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookNotFoundException;
 import pk.training.basit.polarbookshop.catalogservice.jpa.entity.Book;
@@ -14,8 +14,6 @@ import pk.training.basit.polarbookshop.catalogservice.mapper.BookMapper;
 import pk.training.basit.polarbookshop.catalogservice.service.BookService;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 // Stereotype annotation that marks a class to be a service managed by Spring
 @Service

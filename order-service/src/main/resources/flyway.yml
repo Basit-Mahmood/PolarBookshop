@@ -1,0 +1,5 @@
+spring:
+  flyway:
+    user: ${spring.r2dbc.username}      # Gets the value from the username configured for R2DBC
+    password: ${spring.r2dbc.password}  # Gets the value from the password configured for R2DBC
+    url: jdbc:postgresql://localhost:5432/polardb_order   # The same database configured for R2DBC but using the JDBC driver

@@ -1,0 +1,27 @@
+spring:
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format-sql: true        # to format SQL generated in a visually pleasing manner
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          time_zone: UTC
+          batch_size: 20
+          fetch_size: 200
+          batch_versioned_data: true
+
+  datasource:
+    username: basit
+    password: basit123
+    url: jdbc:postgresql://localhost:5432/polardb_catalog
+    hikari:
+      connection-timeout: 2000  # The maximum time (ms) to spend waiting to get a connection from the pool
+      maximum-pool-size: 5      # The maximum number of connections HikariCP will keep in the pool

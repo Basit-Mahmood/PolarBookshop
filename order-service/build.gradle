@@ -1,0 +1,86 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.3'
+	id 'io.spring.dependency-management' version '1.1.3'
+}
+
+group = 'pk.training.basit.polarbookshop'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2022.0.4")
+}
+
+dependencies {
+
+	// Provides the necessary libraries for building reactive web applications with Spring WebFlux and includes
+	//Netty as the default embedded server.
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Provides the necessary libraries for object validation using the Java Bean Validation API.
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+
+	// Provides the necessary libraries to persist data in relational databases with R2DBC using Spring Data in
+	// reactive applications.
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation 'org.springframework.retry:spring-retry'
+
+	// Provides functionality to version-control your database through migrations
+	runtimeOnly 'org.flywaydb:flyway-core'
+
+	// Provides a JDBC driver that allows the application to connect to a PostgreSQL database
+	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'org.postgresql:r2dbc-postgresql'
+	runtimeOnly 'org.springframework:spring-jdbc'
+
+	// Provides several libraries and utilities to test applications, including Spring Test, JUnit, AssertJ, and
+	// Mockito. It’s automatically included in every Spring Boot project.
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Provides utilities to test reactive applications based on Project Reactor. It’s automatically included
+	// in every reactive Spring Boot project.
+	testImplementation 'io.projectreactor:reactor-test'
+
+	// provide utilities to run a mock web server
+	testImplementation 'com.squareup.okhttp3:mockwebserver'
+
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+
+	// Provides the necessary libraries for testing applications using lightweight Docker containers. In particular,
+	// it provides test containers for PostgreSQL supporting the R2DBC driver.
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'org.testcontainers:r2dbc'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+bootBuildImage {
+	imageName = "${project.name}"
+	environment = ["BP_JVM_VERSION": "17.*"]
+
+	docker {
+		publishRegistry {
+			username = project.findProperty("registryUsername")
+			password = project.findProperty("registryToken")
+			url = project.findProperty("registryUrl")
+		}
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

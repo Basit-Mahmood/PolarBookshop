@@ -39,6 +39,7 @@
 # resource consumption, since it increases linearly with the number of threads.
 server:
   port: 8888 # The port that the Config Service application will listen on
+  shutdown: graceful                  # Enable graceful shutdown
   tomcat:
     connection-timeout: 2s
     keep-alive-timeout: 15s
@@ -49,6 +50,8 @@ server:
 spring:
   application:
     name: config-service        # A name for the current application
+  lifecycle:
+    timeout-per-shutdown-phase: 15s   # Defines a 15 sec grace period
   cloud:
     config:
       server:

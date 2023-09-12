@@ -1,8 +1,13 @@
 package pk.training.basit.polarbookshop.catalogservice;
 
+import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.PostgreSQL10Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 
 @SpringBootApplication
 

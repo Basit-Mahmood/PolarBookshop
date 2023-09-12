@@ -6,11 +6,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.jpa.entity.Book;
 import pk.training.basit.polarbookshop.catalogservice.jpa.repository.BookRepository;
 
-import java.util.Collection;
 import java.util.List;
 
 

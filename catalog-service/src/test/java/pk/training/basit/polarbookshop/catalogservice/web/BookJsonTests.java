@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.jpa.entity.Book;
 
 import static org.assertj.core.api.Assertions.assertThat;

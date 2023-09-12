@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookAlreadyExistsException;
 import pk.training.basit.polarbookshop.catalogservice.exception.BookNotFoundException;
 import pk.training.basit.polarbookshop.catalogservice.jpa.repository.BookRepository;

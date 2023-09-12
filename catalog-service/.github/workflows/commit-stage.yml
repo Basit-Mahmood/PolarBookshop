@@ -39,11 +39,11 @@ jobs:                         # Groups together all the jobs that run in the Com
         with:
           sarif_file: ${{ steps.scan.outputs.sarif }}   # Fetches the report from the output of the previous step
       - name: Validate Kubernetes manifests
-        uses: stefanprodan/kube-tools@v1
+        uses: stefanprodan/kube-tools@v1      # An action capable of installing useful tools to work with Kubernetes
         with:
-          kubectl: 1.28.1
-          kubeval: 0.16.1
-          command: |
+          kubectl: 1.28.1                     # Includes the Kubernetes CLI in the installation
+          kubeval: 0.16.1                     # Includes Kubeval in the installation
+          command: |                          # Uses Kubeval to validate the Kubernetes manifests in the k8s folder
             kubeval --strict -d k8s
   package:
     name: Package and Publish

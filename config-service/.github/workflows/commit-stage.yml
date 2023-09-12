@@ -1,13 +1,18 @@
-name: Commit Stage    # The name of the workflow
-on: push                  # The workflow is triggered when new code is pushed to the repository
+name: Commit Stage
+on: push
 
-jobs:                         # Groups together all the jobs that run in the Commit Stage workflow.
-  build:                      # The job’s unique identifier
-    name: Build and Test      # A human-friendly name for the job
-    runs-on: ubuntu-22.04     # The type of machine where the job should be run
-    permissions:              # The permissions granted to the job
-      contents: read          # The Build and Test job will need read access to the Git repository
-      security-events: write  # The Build and Test job will need write access to the security events when submitting a vulnerability report to GitHub.
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: basit-mahmood/config-service
+  VERSION: latest
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
@@ -36,13 +41,13 @@ jobs:                         # Groups together all the jobs that run in the Com
       - name: Validate Kubernetes manifests
         uses: stefanprodan/kube-tools@v1
         with:
-          kubectl: 1.28.1
+          kubectl: 1.24.3
           kubeval: 0.16.1
           command: |
             kubeval --strict -d k8s
   package:
     name: Package and Publish
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs: [ build ]
     runs-on: ubuntu-22.04
     permissions:

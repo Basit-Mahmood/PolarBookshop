@@ -1,8 +1,7 @@
 package pk.training.basit.polarbookshop.catalogservice.service;
 
 import org.springframework.data.domain.Pageable;
-import pk.training.basit.polarbookshop.catalogservice.dto.BookDTO;
-import pk.training.basit.polarbookshop.catalogservice.jpa.entity.Book;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
 
 import java.util.Collection;
 

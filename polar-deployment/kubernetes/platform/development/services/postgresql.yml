@@ -1,10 +1,23 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
+apiVersion: v1    # Version of Kubernetes API used to create this object
+kind: ConfigMap   # What kind of object you want to create
+metadata:         # Data used to uniquely identify the object
+  name: postgres-config
+  labels:
+    db: polar-postgres
+data:
+  init.sql: |
+    CREATE DATABASE polardb_catalog;
+    CREATE DATABASE polardb_order;
+
+---
+
+apiVersion: apps/v1             # Version of Kubernetes API used to create this object
+kind: Deployment                # What kind of object you want to create
+metadata:                       # Data used to uniquely identify the object
   name: polar-postgres
   labels:
     db: polar-postgres
-spec:
+spec:                           # The state you desire for the object
   selector:
     matchLabels:
       db: polar-postgres
@@ -21,8 +34,6 @@ spec:
               value: basit
             - name: POSTGRES_PASSWORD
               value: basit123
-            - name: POSTGRES_DB
-              value: polardb_catalog
           resources:
             requests:
               cpu: 100m
@@ -30,20 +41,27 @@ spec:
             limits:
               cpu: 200m
               memory: 120Mi
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: postgres-config-volume
+      volumes:
+        - name: postgres-config-volume
+          configMap:
+            name: postgres-config
 
 ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: polar-postgres
+apiVersion: v1              # # The API version for Service objects
+kind: Service               # What kind of object you want to create
+metadata:                   # Data used to uniquely identify the object
+  name: polar-postgres      # The name of the Service; it must be a valid DNS name.
   labels:
-    db: polar-postgres
-spec:
-  type: ClusterIP
+    db: polar-postgres      # A label attached to the Service
+spec:                       # The state you desire for the object
+  type: ClusterIP           # The type of Service
   selector:
-    db: polar-postgres
+    db: polar-postgres      # The label used to match the Pods to target and expose
   ports:
-  - protocol: TCP
-    port: 5432
-    targetPort: 5432
+    - protocol: TCP         # The network protocol used by the Service
+      port: 5432            # The port exposed by the Service
+      targetPort: 5432      # The port exposed by the Pods targeted by the Service

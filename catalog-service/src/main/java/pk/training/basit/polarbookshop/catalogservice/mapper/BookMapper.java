@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class BookMapper {
 
-    public static Function<BookDTO, Book> createBookMapper = (bookDto) -> {
+    public static Function<BookDTO, Book> bookDtoToBookMapper = (bookDto) -> {
         return Book.builder(bookDto.isbn())
                 .title(bookDto.title())
                 .author(bookDto.author())
@@ -17,7 +17,7 @@ public class BookMapper {
                 .build();
     };
 
-    public static Function<Book, BookDTO> toBookDto = (book) -> {
+    public static Function<Book, BookDTO> bookToBookDtoMapper = (book) -> {
         return BookDTO.builder(book.getIsbn())
                 .id(book.getId())
                 .title(book.getTitle())

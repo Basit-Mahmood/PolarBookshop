@@ -13,8 +13,6 @@ import pk.training.basit.polarbookshop.catalogservice.jpa.repository.BookReposit
 import pk.training.basit.polarbookshop.catalogservice.mapper.BookMapper;
 import pk.training.basit.polarbookshop.catalogservice.service.BookService;
 
-import java.util.Collection;
-
 // Stereotype annotation that marks a class to be a service managed by Spring
 @Service
 public class BookServiceImpl implements BookService {
@@ -29,38 +27,59 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Collection<BookDTO> viewBookList(Pageable pageable) {
+    public Page<Book> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<BookDTO> viewBookList(Pageable pageable) {
         LOGGER.info("viewBookList() starts for {}", pageable.getSort());
-        Page<Book> books = bookRepository.findAll(pageable);
+        Page<Book> books = getAllBooks(pageable);
         Page<BookDTO> pagedBooksDto = books
-                .map(book -> BookMapper.toBookDto.apply(book));
+                .map(book -> BookMapper.bookToBookDtoMapper.apply(book));
         LOGGER.info("viewBookList() ends for {}", pageable.getSort());
-        return pagedBooksDto.getContent();
+        return pagedBooksDto;
+    }
+
+    @Override
+    public Book findByIsbn(String isbn) {
+        // When trying to view a book that doesn’t exist, a dedicated exception is thrown.
+        return bookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> new BookNotFoundException(isbn));
     }
 
     @Override
     public BookDTO viewBookDetails(String isbn) {
         LOGGER.info("viewBookDetails() starts for book {}", isbn);
-        // When trying to view a book that doesn’t exist, a dedicated exception is thrown.
-        Book book = bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new BookNotFoundException(isbn));
-
-        BookDTO bookDto = BookMapper.toBookDto.apply(book);
+        Book book = findByIsbn(isbn);
+        BookDTO bookDto = BookMapper.bookToBookDtoMapper.apply(book);
         LOGGER.info("viewBookDetails() ends for book {}", isbn);
         return bookDto;
     }
 
     @Override
-    public BookDTO addBookToCatalog(BookDTO bookDto) {
-        LOGGER.info("addBookToCatalog() starts for book {}", bookDto.isbn());
+    public Book saveBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Book addNewBook(Book book) {
+        String isbn = book.getIsbn();
         // When adding the same book to the catalog multiple times, a dedicated exception is thrown.
-        if (bookRepository.existsByIsbn(bookDto.isbn())) {
-            throw new BookAlreadyExistsException(bookDto.isbn());
+        if (bookRepository.existsByIsbn(isbn)) {
+            throw new BookAlreadyExistsException(isbn);
         }
 
-        Book book = BookMapper.createBookMapper.apply(bookDto);
-        Book newBook = bookRepository.save(book);
-        BookDTO newBookDto = BookMapper.toBookDto.apply(newBook);
+        return saveBook(book);
+    }
+
+    @Override
+    public BookDTO addBookToCatalog(BookDTO bookDto) {
+        LOGGER.info("addBookToCatalog() starts for book {}", bookDto.isbn());
+
+        Book book = BookMapper.bookDtoToBookMapper.apply(bookDto);
+        Book newBook = addNewBook(book);
+        BookDTO newBookDto = BookMapper.bookToBookDtoMapper.apply(newBook);
         LOGGER.info("addBookToCatalog() ends for book {}", bookDto.isbn());
         return newBookDto;
     }
@@ -82,16 +101,17 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findByIsbn(isbn)
 				.map(existingBook -> {
                     Book modifiedBook = BookMapper.updateBookMapper.apply(existingBook, bookDto);
-                    Book updatedBook = bookRepository.save(modifiedBook);
+                    Book updatedBook = saveBook(modifiedBook);
                     LOGGER.info("Book {} updated successfully", isbn);
                     LOGGER.info("editBookDetails() ends for book {}", isbn);
-                    return BookMapper.toBookDto.apply(updatedBook);
+                    return BookMapper.bookToBookDtoMapper.apply(updatedBook);
 				})
                 // When changing the details for a book not in the catalog yet, create a new book.
 				.orElseGet(() -> {
-                    BookDTO bookDto1 = addBookToCatalog(bookDto);
+                    BookDTO newBook = addBookToCatalog(bookDto);
+                    LOGGER.info("Book {} added successfully", isbn);
                     LOGGER.info("editBookDetails() ends for book {}", isbn);
-                    return bookDto1;
+                    return newBook;
                 });
     }
 }

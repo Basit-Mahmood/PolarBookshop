@@ -1,12 +1,13 @@
 package pk.training.basit.polarbookshop.orderservice.web.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import pk.training.basit.polarbookshop.orderservice.web.dto.PagedResponse;
 import pk.training.basit.polarbookshop.orderservice.web.request.OrderRequest;
 import pk.training.basit.polarbookshop.orderservice.r2dbc.entity.Order;
 import pk.training.basit.polarbookshop.orderservice.service.OrderService;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -21,8 +22,9 @@ public class OrderController {
 
     // A Flux is used to publish multiple orders (0 .. N).
     @GetMapping
-    public Flux<Order> getAllOrders(Pageable pageable) {
-        return orderService.getAllOrders(pageable);
+    public Mono<PagedResponse> getAllOrders(Pageable pageable) {
+        Mono<Page<Order>> monoPagedOrders = orderService.getAllOrders(pageable);
+         return monoPagedOrders.map(pagedOrders -> PagedResponse.builder(pagedOrders).build());
     }
 
     /**

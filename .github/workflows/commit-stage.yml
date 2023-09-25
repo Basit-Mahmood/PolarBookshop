@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [catalog-service,config-service,order-service]
+        project: [catalog-service,config-service,order-service,edge-service]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

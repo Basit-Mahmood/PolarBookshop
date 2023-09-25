@@ -52,6 +52,11 @@ spring:
     name: catalog-service             # The name of the application, used by the config server to filter the configuration
   lifecycle:
     timeout-per-shutdown-phase: 15s   # Defines a 15 sec grace period
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+        max-page-size: 50
   config:
     import:
       - database.yml

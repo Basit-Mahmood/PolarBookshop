@@ -1,15 +1,15 @@
 package pk.training.basit.polarbookshop.catalogservice.web.controller.rest;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
 import pk.training.basit.polarbookshop.catalogservice.service.BookService;
-
-import java.util.Collection;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.BookDTO;
+import pk.training.basit.polarbookshop.catalogservice.web.dto.PagedResponse;
 
 // Stereotype annotation marking a class as a Spring component and a source of handlers for REST
 //endpoints
@@ -29,8 +29,9 @@ public class BookController {
      * Maps HTTP GET requests to the specific handler method
      */
     @GetMapping
-    public Collection<BookDTO> get(@SortDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return bookService.viewBookList(pageable);
+    public PagedResponse get(@SortDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<BookDTO> pagedBooksDto = bookService.viewBookList(pageable);
+        return PagedResponse.builder(pagedBooksDto).build();
     }
 
     /**

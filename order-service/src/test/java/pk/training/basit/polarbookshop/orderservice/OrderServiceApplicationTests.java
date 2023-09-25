@@ -15,8 +15,13 @@ import pk.training.basit.polarbookshop.orderservice.enums.OrderStatus;
 import pk.training.basit.polarbookshop.orderservice.r2dbc.entity.Order;
 import pk.training.basit.polarbookshop.orderservice.web.client.BookClient;
 import pk.training.basit.polarbookshop.orderservice.web.dto.BookDTO;
+import pk.training.basit.polarbookshop.orderservice.web.dto.PagedResponse;
 import pk.training.basit.polarbookshop.orderservice.web.request.OrderRequest;
 import reactor.core.publisher.Mono;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -72,8 +77,13 @@ class OrderServiceApplicationTests {
 				//.uri("/orders")
 				.exchange()
 				.expectStatus().is2xxSuccessful()
-				.expectBodyList(Order.class).value(orders -> {
-					assertThat(orders.stream().filter(order -> order.bookIsbn().equals(bookIsbn)).findAny()).isNotEmpty();
+				.expectBody(PagedResponse.class).value(pagedResponse -> {
+					var orders = (List<LinkedHashMap<String, Object>>) pagedResponse.content();
+					assertThat(
+							orders.stream()
+									.filter(order -> order.get("bookIsbn").equals(bookIsbn))
+									.findAny()
+					).isNotEmpty();
 				});
 	}
 

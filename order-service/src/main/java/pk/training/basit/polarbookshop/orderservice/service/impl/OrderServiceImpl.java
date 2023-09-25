@@ -2,11 +2,12 @@ package pk.training.basit.polarbookshop.orderservice.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pk.training.basit.polarbookshop.orderservice.enums.OrderStatus;
 import pk.training.basit.polarbookshop.orderservice.r2dbc.entity.Order;
-import pk.training.basit.polarbookshop.orderservice.r2dbc.repository.OrderPagingRepository;
 import pk.training.basit.polarbookshop.orderservice.r2dbc.repository.OrderRepository;
 import pk.training.basit.polarbookshop.orderservice.service.OrderService;
 import pk.training.basit.polarbookshop.orderservice.web.client.BookClient;
@@ -21,22 +22,23 @@ public class OrderServiceImpl implements OrderService {
 
     private final BookClient bookClient;
     private final OrderRepository orderRepository;
-    private final OrderPagingRepository orderPagingRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderPagingRepository orderPagingRepository,
-                            BookClient bookClient) {
+    public OrderServiceImpl(OrderRepository orderRepository, BookClient bookClient) {
         this.orderRepository = orderRepository;
-        this.orderPagingRepository = orderPagingRepository;
         this.bookClient = bookClient;
     }
 
     // A Flux is used to publish multiple orders (0 ... N)
     @Override
-    public Flux<Order> getAllOrders(Pageable pageable) {
+    public Mono<Page<Order>> getAllOrders(Pageable pageable) {
         LOGGER.info("getAllOrders() starts for {}", pageable.getSort());
-        Flux<Order> orders = orderPagingRepository.findAllBy(pageable);
+        Flux<Order> orders = orderRepository.findAllBy(pageable);
+        Mono<Page<Order>> pagedOrders = orders.collectList()
+                .zipWith(orders.count())
+                .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.size()));
+
         LOGGER.info("getAllOrders() ends for {}", pageable.getSort());
-        return orders;
+        return pagedOrders;
     }
 
     @Override

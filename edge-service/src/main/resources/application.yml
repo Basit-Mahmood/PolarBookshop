@@ -1,0 +1,20 @@
+server:
+  port: 9000                # The port where the server will accept connections
+  shutdown: graceful        # Enable graceful shutdown
+  netty:
+    connection-timeout: 2s  # How long to wait for a TCP connection to be established with the server
+    idle-timeout: 15s       # How long to wait before closing a TCP connection if no data is transferred
+
+spring:
+  application:
+    name: edge-service                 # The name of the application, used by the config server to filter the configuration
+  lifecycle:
+    timeout-per-shutdown-phase: 15s    # Defines a 15 sec grace period
+  config:
+    import:
+      - cloud-config-server.yml
+      - redis.yml
+      - resilience4j.yml
+      - gateway.yml
+      - jackson.yml
+      - logging.yml
